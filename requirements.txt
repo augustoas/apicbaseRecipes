@@ -3,3 +3,4 @@ Django==4.0.1
 django-heroku==0.0.0
 djangorestframework==3.13.1
 gunicorn==20.1.0
+psycopg2-binary==2.8.5
