@@ -10,7 +10,6 @@ urlpatterns = [
     path('register', views.register, name='register'),
     path('login', obtain_auth_token, name='login'),
 
-
     path('ingredient-list', views.ingredientsList, name='ingredient-list'),
     path('ingredient/<str:pk>', views.ingredientById, name='ingredient'),
     path('ingredient-new', views.newIngredient, name='ingredient-new'),
@@ -22,7 +21,6 @@ urlpatterns = [
     path('recipe-edit/<str:pk>', views.editRecipe, name='recipe-edit'),
     path('recipe-delete/<str:pk>', views.deleteRecipe, name='recipe-delete'),
 
-    
     path('recipe-ingredients-list', views.recipeIngredientsList, name='recipe-ingredient-list'),
     path('new-recipe-ingredient', views.addIngredientToRecipe, name='new-recipe-ingredient'),
     path('ingredient-recipe-delete/<str:pk>', views.deleteIngredientFromRecipe, name='ingredient-recipe-delete'),
