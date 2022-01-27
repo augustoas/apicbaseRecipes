@@ -10,12 +10,13 @@ from django.dispatch import receiver
 class Ingredient(models.Model):
     user = models.ForeignKey('auth.User', related_name='ingredients', on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
+    articleNumber = models.PositiveIntegerField()
     cost = models.DecimalField(max_digits=15, decimal_places=2)
     amount = models.DecimalField(max_digits=15, decimal_places=2, blank=True, default=0)
     unit = models.CharField(max_length=200)
 
     class Meta:
-        unique_together = (("user", "name"),) 
+        unique_together = (("user", "name"),("user", "articleNumber"),) 
 
 class Recipe(models.Model):
     user = models.ForeignKey('auth.User', related_name='recipes', on_delete=models.CASCADE)

@@ -1,3 +1,5 @@
+from copyreg import constructor
+from pickle import TRUE
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
@@ -30,22 +32,26 @@ def register(request):
     data = {}
     if serializer.is_valid():
         user = serializer.save()
+        token = Token.objects.get(user=user).key
         data['response'] = "new user registered"
         data['username'] = user.username
-        token = Token.objects.get(user=user).key
         data['token'] = token
+        data['ok'] = True
     else:
-        data = serializer.errors
+        data['errors'] = serializer.errors
+        data['ok'] = False
+
     return Response(data)
 
 #INGREDIENTS
 
-#NO VA 
+#INGREDIENTS FILTERED BY USER
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([TokenAuthentication])
 def ingredientsList(request):
-    ingredients = Ingredient.objects.all()
+    user = request.user
+    ingredients = Ingredient.objects.filter(user=user)
     serializer = IngredientSerializer(ingredients, many=True)
 
     return Response(serializer.data)
@@ -69,11 +75,11 @@ def newIngredient(request):
     data = {}
     if serializer.is_valid():
         ingredient = serializer.save()
-        data['response'] = "new ingredient registered"
-        data['name'] = ingredient.name
+        data['response'] = "new ingredient registered "+ingredient.name
+        data['ingredient'] = serializer.data
+        data['ok'] = True
     else:
         data = serializer.errors
-
     return Response(data)
 
 #EDIT INGREDIENT
@@ -81,13 +87,9 @@ def newIngredient(request):
 @permission_classes([IsAuthenticated])
 @authentication_classes([TokenAuthentication])
 def editIngredient(request, pk):
-    print('edit ingredient')
-    print('request', request)
-
     data = {}
     try: 
         ingredient = Ingredient.objects.get(id=pk)
-        #if tokens son iguales, que procesa, osino que tire error .
     except Ingredient.DoesNotExist:
         data['response'] = "ingredient not exist"
         return Response(data)
@@ -96,8 +98,11 @@ def editIngredient(request, pk):
     if serializer.is_valid():        
         serializer.save()
         data['response'] = "ingredient edited"
+        data['ingredient'] = serializer.data
+        data['ok'] = True
     else:
         data['response'] = "ingredient not edited"
+        data['ok'] = False
         data = serializer.errors
     return Response(data)
     
@@ -117,22 +122,23 @@ def deleteIngredient(request, pk):
     operation = ingredient.delete()
     if operation:        
         data['response'] = "ingredient deleted succesfully"
+        data['ok'] = True
     else:
         data['response'] = "ingredient not deleted"
     return Response(data)
 
 #RECIPES
 
-#NO VA
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([TokenAuthentication])
 def recipeList(request):
-    recipes = Recipe.objects.all()
+    user = request.user
+    recipes = Recipe.objects.filter(user=user)
     serializer = RecipeSerializer(recipes, many=True)
     return Response(serializer.data)
 
-#CREATE RECIPE
+#NEW RECIPE
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([TokenAuthentication])
@@ -141,10 +147,10 @@ def newRecipe(request):
     data = {}
     if serializer.is_valid():
         recipe = serializer.save()
-        data['response'] = "new recipe registered"
-        data['name'] = recipe.name
+        data['response'] = "new recipe registered "+recipe.name
+        data['recipe'] = serializer.data
+        data['ok'] = True
     else:
-        print('no es valido')
         data = serializer.errors
     return Response(data)
 
@@ -164,8 +170,11 @@ def editRecipe(request, pk):
     if serializer.is_valid():        
         serializer.save()
         data['response'] = "recipe edited"
+        data['recipe'] = serializer.data
+        data['ok'] = True
     else:
         data['response'] = "recipe not edited"
+        data['ok'] = False
         data = serializer.errors
     return Response(data)
 

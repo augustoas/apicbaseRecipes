@@ -9,7 +9,7 @@ class RecipeAdmin(admin.ModelAdmin):
 
 
 class IngredientAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'cost', 'unit')
+    list_display = ('id', 'articleNumber' , 'name', 'cost', 'unit')
 
 class RecipeIngredientAdmin(admin.ModelAdmin):
     pass

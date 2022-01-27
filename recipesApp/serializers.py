@@ -26,7 +26,7 @@ class NewIngredientSerializer(serializers.ModelSerializer):
 class EditIngredientSerializer(NewIngredientSerializer):
     class Meta:
         model = Ingredient
-        fields = ('name' , 'cost')
+        fields = ('articleNumber' ,'name' , 'cost', 'unit', 'amount')
 
 #RECIPES
 
@@ -36,7 +36,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ('name', 'ingredients')
+        fields = '__all__'
 
 class NewRecipeSerializer(serializers.ModelSerializer):
     
@@ -44,8 +44,9 @@ class NewRecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ('name', 'user', 'ingredients')
+        fields = '__all__'
         read_only_fields = ['user'] # set user as read-only field
+
 
     def create(self, validated_data):
         # get the user from the request
