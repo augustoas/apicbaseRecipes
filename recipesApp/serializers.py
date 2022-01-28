@@ -59,7 +59,16 @@ class EditRecipeSerializer(NewRecipeSerializer):
         model = Recipe
         fields = ('name', 'ingredients')
 
+class IngredientRecipe(serializers.ModelSerializer):
+
+    class Meta:
+        model = RecipeIngredient
+        fields = '__all__'
+
 class NewIngredientToRecipe(serializers.ModelSerializer):
+
+    ingredient = IngredientSerializer(required = False)
+    recipe = RecipeSerializer(required = False)
 
     class Meta:
         model = RecipeIngredient
@@ -69,15 +78,12 @@ class EditIngredientRecipeSerializer(NewIngredientToRecipe):
 
     class Meta:
         model = RecipeIngredient
-        fields = ('r_amount')
+        fields = '__all__'
 
 #USER
 
 class UserSerializer(serializers.ModelSerializer):
 
-    ingredients = IngredientSerializer(many=True)
-    recipes = RecipeSerializer(many=True)
-   
     class Meta:
         model = User
         fields = ['id', 'username', 'ingredients', 'recipes']

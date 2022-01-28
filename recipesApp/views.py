@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from .models import Ingredient, Recipe, RecipeIngredient
-from .serializers import UserSerializer, IngredientSerializer, NewIngredientSerializer, EditIngredientSerializer, RecipeSerializer, NewRecipeSerializer, EditRecipeSerializer, NewIngredientToRecipe, EditIngredientRecipeSerializer, RegistrationSerializer
+from .serializers import UserSerializer, IngredientSerializer, NewIngredientSerializer, EditIngredientSerializer, RecipeSerializer, NewRecipeSerializer, EditRecipeSerializer, NewIngredientToRecipe, EditIngredientRecipeSerializer, IngredientRecipe, RegistrationSerializer
 
 @api_view(['GET'])
 def apiEndPoints(request):
@@ -56,7 +56,7 @@ def ingredientsList(request):
 
     return Response(serializer.data)
 
-#NO VA
+#INGREDIENT BY ID (NOT USED)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 @authentication_classes([TokenAuthentication])
@@ -197,11 +197,19 @@ def deleteRecipe(request, pk):
         data['response'] = "recipe not deleted"
     return Response(data)
 
-#NO VA
+#INGREDIENTS RECIPES RELATION LIST
 @api_view(['GET'])
 def recipeIngredientsList(request):
-    ingredients = RecipeIngredient.objects.all()
-    serializer = NewIngredientToRecipe(ingredients, many=True)
+    ingrec = RecipeIngredient.objects.all()
+    serializer = NewIngredientToRecipe(ingrec, many=True)
+    return Response(serializer.data)
+
+#INGREDIENTS BY RECIPE PK
+@api_view(['GET'])
+def ingredientsByRecipeList(request, pk):
+    recipe = Recipe.objects.get(id=pk)
+    ingrec = RecipeIngredient.objects.filter(recipe=recipe)
+    serializer = NewIngredientToRecipe(ingrec, many=True)
     return Response(serializer.data)
 
 #ADD INGREDIENT TO RECIPE
@@ -209,13 +217,20 @@ def recipeIngredientsList(request):
 @permission_classes([IsAuthenticated])
 @authentication_classes([TokenAuthentication])
 def addIngredientToRecipe(request):
-    serializer = NewIngredientToRecipe(data=request.data)
+    serializer = IngredientRecipe(data=request.data)
     data = {}
+    print('REQUEST', request.data)
     if serializer.is_valid():
         ingredient = serializer.save()
         data['response'] = "new ingredient added to recipe"
+        data['ingrec'] = serializer.data
+        data['ok'] = True
     else:
-        data = serializer.errors
+        print('no es valido')
+        data['response'] = "failed"
+        data['ok'] = False
+        data['error']= serializer.errors
+
     return Response(data)
 
 #EDIT INGREDIENT FROM RECIPE
@@ -234,6 +249,7 @@ def editIngredientFromRecipe(request, pk):
     if serializer.is_valid():        
         serializer.save()
         data['response'] = "ingredient from recipe edited"
+        data['ok'] = True
     else:
         data['response'] = "ingredient from recipe not edited"
         data = serializer.errors
@@ -244,6 +260,7 @@ def editIngredientFromRecipe(request, pk):
 @permission_classes([IsAuthenticated])
 @authentication_classes([TokenAuthentication])
 def deleteIngredientFromRecipe(request, pk):
+    print('request dta', request.data)
     data = {}
     try: 
         ingredient = RecipeIngredient.objects.get(id=pk)
@@ -254,6 +271,7 @@ def deleteIngredientFromRecipe(request, pk):
     operation = ingredient.delete()
     if operation:        
         data['response'] = "ingredient deleted succesfully"
+        data['ok'] = True
     else:
         data['response'] = "ingredient not deleted"
     return Response(data)
