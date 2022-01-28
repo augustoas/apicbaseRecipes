@@ -47,7 +47,6 @@ class NewRecipeSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ['user'] # set user as read-only field
 
-
     def create(self, validated_data):
         # get the user from the request
         user = self.context['request'].user
