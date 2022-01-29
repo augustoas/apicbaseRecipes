@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-3m4457%4m40srixsm!w)rsi5_7w4n018-&_uinx$(pfgi5n$6u
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['127.0.0.1', 'apicbasevue-1147e.web.app', 'apicbasevue-1147e.firebaseapp.com', 'apicbaseback.herokuapp.com']
 
 
 # Application definition

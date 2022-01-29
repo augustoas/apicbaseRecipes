@@ -12,7 +12,8 @@ class IngredientAdmin(admin.ModelAdmin):
     list_display = ('id', 'articleNumber' , 'name', 'cost', 'unit')
 
 class RecipeIngredientAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('id', 'recipe' , 'ingredient')
+
 
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
